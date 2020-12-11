@@ -1,0 +1,16 @@
+{{ appDisplayName }}
+=====================================================================
+
+
+Your access code: {{ otp }}
+
+
+This is a one-time access code requested for {{ appDisplayName }}.
+The code will expire in about {{ otpTimeout }} minutes.
+
+If you have not requested any access codes or have questions regarding this message, please contact us by replying to this email.
+
+
+
+Powered by Logintoo
+https://logintoo.com

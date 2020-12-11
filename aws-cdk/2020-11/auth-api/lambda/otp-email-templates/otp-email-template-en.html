@@ -1,0 +1,53 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="HandheldFriendly" content="true"> 
+    <meta name="viewport" content="width=device-width; initial-scale=1.0; user-scalable=0">
+  </head> 
+  
+  <body style="background-color: #fff; color: #607d8b; font-family: Roboto, Helvetica, Arial, sans-serif; margin: 0; padding: 0; width:100% !important;">
+    <table align="center" border="0" cellspacing="0" cellpadding="0" width="100%" 
+      style="table-layout: fixed; mso-table-rspace: 0pt; mso-table-lspace: 0pt;">
+      <tbody> 
+        <tr>
+          <td align="center" style="mso-table-rspace: 0pt; mso-table-lspace: 0pt;">
+            
+            <table align="center" border="0" cellspacing="0" cellpadding="0" bgcolor="#eceff1" 
+              style="background: #eceff1; max-width: 360px; margin: 24px auto; padding: 32px; border: solid #607d8b 1px; border-radius: 3px; table-layout: fixed; mso-table-rspace: 0pt; mso-table-lspace: 0pt;">
+              <tbody>
+                <tr>
+                  <td align="center" style="mso-table-rspace: 0pt; mso-table-lspace: 0pt;">
+                    {{ otpEmailLogo }}
+                    
+                    <h1 style="font-size: 22px; font-weight: 300; margin: 32px 0 16px 0;">
+                      Your access code
+                    </h1>
+                    
+                    <p style="font-size: 36px; font-weight: 800; margin-bottom: 0;">{{ otp }}</p>
+                    
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          
+          </td>
+        </tr>
+      
+        <tr>
+          <td align="center" style="mso-table-rspace: 0pt; mso-table-lspace: 0pt;">
+            <p style="line-height: 140%; margin: 16px 24px; font-size: 11px">
+              This is a one-time access code requested for {{ appDisplayName }}. The code is valid for about {{ otpTimeout }} minutes.
+            </p>
+            <p style="line-height: 140%; margin: 16px 24px; font-size: 11px">
+              If you have not requested any access codes or have questions regarding this message, please contact us by replying to this email.
+            </p>
+            <p style="line-height: 140%; margin: 16px 24px; font-size: 11px">
+              <a href="https://logintoo.com" style="color: #607d8b; text-decoration: none;">Powered by Logintoo</a>
+            </p>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </body>
+</html>

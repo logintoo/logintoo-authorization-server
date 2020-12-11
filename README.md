@@ -1,2 +1,3 @@
-# logintoo-authorization-server
-Logintoo passwordless authentication server
+# Logintoo Authorization Server
+
+Logintoo passwordless authentication server.
