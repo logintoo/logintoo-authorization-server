@@ -1,29 +1,30 @@
 'use strict';
+const Config = require('./Config.js');
 
 // This API version. It will be used as an API URI path, e.g. https://api.example.com/<API_VERSION>/auth.
 const API_VERSION = '2020-11';
 
 // API domain name and certificate Arn.
-const API_DOMAIN_NAME = 'api.example.net';
-const CERTIFICATE_ARN = 'arn:aws:acm:<region>:<account>:certificate/<ID>';
+const API_DOMAIN_NAME = Config.API_DOMAIN_NAME;
+const CERTIFICATE_ARN = Config.CERTIFICATE_ARN;
 
 // The Arn of the key for sign JWTs with, the key is stored in AWS KMS.
-const KEY_ARN = 'arn:aws:kms:<region>:<account>:key/<ID>';
+const KEY_ARN = Config.KEY_ARN;
 
 // JWT "iss" (issuer) claim.
-const ISS = 'example.com';
+const ISS = Config.ISS;
 
 // SendGrid API key and template ID.
-const SENDGRID_API_KEY = 'SG.<ID>';
+const SENDGRID_API_KEY = Config.SENDGRID_API_KEY;
 
 // The FROM address for OTP emails. The domain must be verified in SendGrid.
-const SYS_EMAIL_FROM = 'auth@example.com';
+const SYS_EMAIL_FROM = Config.SYS_EMAIL_FROM;
 
 // DynamoDB tables and indexes names.
-const CLIENTS_TABLE_NAME = 'logintoo-clients-' + API_VERSION;
-const CACHE_TABLE_NAME = 'logintoo-cache-' + API_VERSION;
-const NORMALIZED_EMAIL_INDEX_NAME = 'normalizedEmailIndex';
-const AUTH_CODE_INDEX_NAME = 'authorizationCodeIndex';
+const CLIENTS_TABLE_NAME = Config.CLIENTS_TABLE_NAME + '-' + API_VERSION;
+const CACHE_TABLE_NAME = Config.CACHE_TABLE_NAME + '-' + API_VERSION;
+const NORMALIZED_EMAIL_INDEX_NAME = Config.NORMALIZED_EMAIL_INDEX_NAME;
+const AUTH_CODE_INDEX_NAME = Config.AUTH_CODE_INDEX_NAME;
 
 // Patterns to be used in the API Gateway models and in Lambda functions.
 const CLIENT_ID_PATTERN = '^[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-4[0-9A-Fa-f]{3}-[89ABab][0-9A-Fa-f]{3}-[0-9A-Fa-f]{12}$';
@@ -140,10 +141,6 @@ class AuthApiStack extends cdk.Stack {
 }
 
 function setTags() {
-  const KNOWN_AWS_ACCOUNTS = {
-    '<AWS_Account_No>': {ownerTag: '<Owner_Info>'}
-  };
-
   const tags = [];
 
   // Full path to the working directory.
@@ -160,7 +157,7 @@ function setTags() {
 
   tags.push({
     key: 'Owner',
-    value: (KNOWN_AWS_ACCOUNTS[awsAccount]) ? KNOWN_AWS_ACCOUNTS[awsAccount].ownerTag : process.env.USER
+    value: (Config.KNOWN_AWS_ACCOUNTS[awsAccount]) ? Config.KNOWN_AWS_ACCOUNTS[awsAccount].ownerTag : process.env.USER
   });
 
   return tags;

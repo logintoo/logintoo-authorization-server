@@ -18,7 +18,8 @@ class LogintooApi extends cdk.Construct {
     const domain = new apigw.DomainName(this, 'custom-domain', {
       domainName: props.API_DOMAIN_NAME,
       certificate: Certificate.fromCertificateArn(this, 'certificate', props.CERTIFICATE_ARN),
-      endpointType: apigw.EndpointType.EDGE
+      endpointType: apigw.EndpointType.EDGE,
+      securityPolicy: apigw.SecurityPolicy.TLS_1_2
     });
     domain.addBasePathMapping(api, {
       basePath: props.API_VERSION
@@ -239,24 +240,176 @@ class LogintooApi extends cdk.Construct {
       requestValidator: authorizeValidator
     });
     otpResource.addMethod('POST', otpIntegration, {
+      methodResponses: [
+        {
+          statusCode: '200',
+          responseParameters: {
+            'method.response.header.Access-Control-Allow-Origin': true
+          }
+        },
+        {
+          statusCode: '400',
+          responseParameters: {
+            'method.response.header.Access-Control-Allow-Origin': true
+          }
+        },
+        {
+          statusCode: '401',
+          responseParameters: {
+            'method.response.header.Access-Control-Allow-Origin': true
+          }
+        },
+        {
+          statusCode: '403',
+          responseParameters: {
+            'method.response.header.Access-Control-Allow-Origin': true
+          }
+        },
+        {
+          statusCode: '500',
+          responseParameters: {
+            'method.response.header.Access-Control-Allow-Origin': true
+          }
+        },
+        {
+          statusCode: '503',
+          responseParameters: {
+            'method.response.header.Access-Control-Allow-Origin': true
+          }
+        }
+      ],
       requestModels: {
         'application/json': otpModel
       },
       requestValidator: otpValidator
     });
     tokenResource.addMethod('POST', accessTokenIntegration, {
+      methodResponses: [
+        {
+          statusCode: '200',
+          responseParameters: {
+            'method.response.header.Access-Control-Allow-Origin': true
+          }
+        },
+        {
+          statusCode: '400',
+          responseParameters: {
+            'method.response.header.Access-Control-Allow-Origin': true
+          }
+        },
+        {
+          statusCode: '401',
+          responseParameters: {
+            'method.response.header.Access-Control-Allow-Origin': true
+          }
+        },
+        {
+          statusCode: '403',
+          responseParameters: {
+            'method.response.header.Access-Control-Allow-Origin': true
+          }
+        },
+        {
+          statusCode: '500',
+          responseParameters: {
+            'method.response.header.Access-Control-Allow-Origin': true
+          }
+        },
+        {
+          statusCode: '503',
+          responseParameters: {
+            'method.response.header.Access-Control-Allow-Origin': true
+          }
+        }
+      ],
       requestModels: {
         'application/json': accessTokenModel
       },
       requestValidator: accessTokenValidator
     });
     tokenResource.addMethod('PATCH', refreshTokenIntegration, {
+      methodResponses: [
+        {
+          statusCode: '200',
+          responseParameters: {
+            'method.response.header.Access-Control-Allow-Origin': true
+          }
+        },
+        {
+          statusCode: '400',
+          responseParameters: {
+            'method.response.header.Access-Control-Allow-Origin': true
+          }
+        },
+        {
+          statusCode: '401',
+          responseParameters: {
+            'method.response.header.Access-Control-Allow-Origin': true
+          }
+        },
+        {
+          statusCode: '403',
+          responseParameters: {
+            'method.response.header.Access-Control-Allow-Origin': true
+          }
+        },
+        {
+          statusCode: '500',
+          responseParameters: {
+            'method.response.header.Access-Control-Allow-Origin': true
+          }
+        },
+        {
+          statusCode: '503',
+          responseParameters: {
+            'method.response.header.Access-Control-Allow-Origin': true
+          }
+        }
+      ],
       requestModels: {
         'application/json': refreshTokenModel
       },
       requestValidator: refreshTokenValidator
     });
     tokenResource.addMethod('DELETE', deleteTokenIntegration, {
+      methodResponses: [
+        {
+          statusCode: '200',
+          responseParameters: {
+            'method.response.header.Access-Control-Allow-Origin': true
+          }
+        },
+        {
+          statusCode: '400',
+          responseParameters: {
+            'method.response.header.Access-Control-Allow-Origin': true
+          }
+        },
+        {
+          statusCode: '401',
+          responseParameters: {
+            'method.response.header.Access-Control-Allow-Origin': true
+          }
+        },
+        {
+          statusCode: '403',
+          responseParameters: {
+            'method.response.header.Access-Control-Allow-Origin': true
+          }
+        },
+        {
+          statusCode: '500',
+          responseParameters: {
+            'method.response.header.Access-Control-Allow-Origin': true
+          }
+        },
+        {
+          statusCode: '503',
+          responseParameters: {
+            'method.response.header.Access-Control-Allow-Origin': true
+          }
+        }
+      ],
       requestModels: {
         'application/json': deleteTokenModel
       },
