@@ -2,9 +2,9 @@
 
 This is an implementation of OAuth 2.0 Authorization Server ([RFC 6749](https://tools.ietf.org/html/rfc6749) with the [RFC 7636, PKCE](https://tools.ietf.org/html/rfc7636) extension) for **passwordless authentication**. The server generates a One-Time Password (OTP) for each login and emails it to a user. Try it out at [sample.logintoo.com](https://sample.logintoo.com).
 
-[API reference](https://app.swaggerhub.com/apis-docs/logintoo/logintoo-authorization-server/2020-11)
+## API
 
-The **/html** folder contains the static website files -- *will be published soon*.
+[API reference](https://app.swaggerhub.com/apis-docs/logintoo/logintoo-authorization-server/2020-11)
 
 The **/aws-cdk** folder contains everything you need to deploy the Authorization Server API into AWS infrastructure using [AWS Cloud Development Kit](https://aws.amazon.com/cdk/) (AWS CDK). This stack defines the API to be deployed in AWS API Gateway, DynamoDB tables, and Lambda functions.
 
@@ -64,5 +64,14 @@ The Clients DynamoDB table scheme. Each record represents an application that is
 - tokenAud: Access Token aud (Audience) claim.
 
 You need an [AWS](https://aws.amazon.com/) account to deploy the API.
+
+## Web GUI
+
+The **/html** folder contains the static website files.
+
+Copy **/html/js/config.js.example** to **/html/js/config.js** and customize parameters:
+
+- **apiURL**: Authorization Server API endpoint URL.
+
 
 *The static website utilizes [jQuery](https://jquery.com) and [Materialize](https://materializecss.com).*
