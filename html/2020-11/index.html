@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="MobileOptimized" content="width" />
+  <meta name="HandheldFriendly" content="true" />
+
+  
+    <title>Authorization</title>
+  
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/favicon/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon/favicon-16x16.png">
+  <link rel="manifest" href="/favicon/site.webmanifest">
+  <link rel="mask-icon" href="/favicon/safari-pinned-tab.svg" color="#5bbad5">
+  <link rel="shortcut icon" href="/favicon/favicon.ico">
+  <meta name="msapplication-TileColor" content="#00aba9">
+  <meta name="msapplication-config" content="/favicon/browserconfig.xml">
+  <meta name="theme-color" content="#ffffff">
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css" integrity="sha256-OweaP/Ic6rsV+lysfyS4h+LM6sRwuO3euTYfr6M124g=" crossorigin="anonymous" />
+
+  
+  <link rel="stylesheet" href="/css/styles.min.b305dccc84b612721ef23d9a9c7e72337d11c24c61f75b04e1e6f452f3ac0e60.css" integrity="sha256-swXczIS2EnIe8j2anH5yM30Rwkxh91sE4eb0UvOsDmA=" />
+  
+  
+  
+  
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=" crossorigin="anonymous"></script>
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js" integrity="sha256-U/cHDMTIHCeMcvehBv1xQ052bPSbJtbuiw4QA9cTKz0=" crossorigin="anonymous"></script>
+
+  
+  <script defer src="/js/config.js"></script>
+  
+  
+  
+
+  
+  
+  <script defer src="/js/index.min.9b9858010454bd3d76ca75febd8584648df74d11ea6a58563be7631a996e90f8.js" integrity="sha256-m5hYAQRUvT12ynX&#43;vYWEZI33TRHqalhWO&#43;djGplukPg="></script>
+  
+  
+  
+</head>
+<body>
+
+  
+
+
+<main>
+  <div class="container">
+    <div class="section">
+      <div class="row">
+        <div class="col s12">
+          <noscript>
+            <div class="card-panel center">
+              <p>Your web browser must have <strong>JavaScript</strong> enabled in order for this application to display correctly.</p>
+            </div>
+          </noscript>
+
+          <div id="card" class="card-panel hoverable" style="display: none;">
+            <div id="card-preloader" class="progress">
+              <div class="indeterminate"></div>
+            </div>
+
+            <div id="error-bad-parameters" style="display: none;">
+              <p class="flow-text">Bad or no parameters</p>
+            </div>
+            <div id="error-access-denied" style="display: none;">
+              <p class="flow-text">Access denied</p>
+            </div>
+
+            <div id="login-form" style="display: none;">
+              <h5 class="center-align">Get an Access Code</h5>
+              
+              <div class="section">
+                <div class="input-field">
+                  <input id="email" name="email" type="email" class="validate" required autocomplete="on" autocapitalize="off" spellcheck="false">
+                  <label for="email">Email</label>
+                  <span class="helper-text" data-error="Please enter a valid email address" data-success="Valid">Enter your email address</span>
+                </div>
+              </div>
+              
+              <button id="email-btn" type="submit" class="btn waves-effect waves-light">Send</button>
+            </div>
+
+            <div id="enter-code" style="display: none;">
+              <div class="section">
+                <p class="flow-text grey-text">
+                  The access code has been emailed to you. Please allow up to 10 minutes for the code to reach you before requesting a new one.
+                </p>
+              </div>
+              
+              <h5 class="center-align">Enter the Access Code</h5>
+              
+              <div class="section">
+                <div class="input-field">
+                  <input id="access-code" name="access-code" type="text" required autocomplete="off" autocapitalize="off" spellcheck="false">
+                  <label for="access-code">Code</label>
+                  <span class="helper-text" data-error="Please enter the access code emailed to you" data-success="Valid">Enter your access code</span>
+                </div>
+              </div>
+              
+              <button id="code-btn" type="submit" class="btn waves-effect waves-light">Submit</button>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+
+
+</body>
+</html>

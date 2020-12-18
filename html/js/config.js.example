@@ -1,0 +1,2 @@
+// Authorization Server API endpoint URL.
+const apiURL = 'https://api.example.net/version';    // Don't add a trailing slash.
