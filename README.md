@@ -14,13 +14,16 @@ Create a Customer managed key in AWS Key Management Service (KMS): Asymmetric, f
 
 Copy **/aws-cdk/2020-11/auth-api/lib/Config.js.example** to **/aws-cdk/2020-11/auth-api/lib/Config.js** and customize parameters:
 
-- **KNOWN_AWS_ACCOUNTS**: Specify the AWS account ID and the text for the 'Owner' tag, e.g. your name.
-- **API_DOMAIN_NAME**: API domain name.
-- **CERTIFICATE_ARN**: The AWS ARN of your Certificate for the API domain.
-- **KEY_ARN**: The AWS ARN of the key for sign JWTs with, the key is stored in AWS KMS.
-- **ISS**: The 'iss' (Issuer) claim of the Access Token, identifies this Authorization Server.
-- **SENDGRID_API_KEY**: SendGrid API key.
-- **SYS_EMAIL_FROM**: The FROM address for OTP emails. The domain or email address must be verified in SendGrid.
+- **API_VERSION**: The API version. The current version is '*2020-11*'. If you change this, rename the corresponding sub-folder of the static website. Must be a URL-safe string.
+- **PROFILE.\<account\>**, **PROFILE.\<account\>.\<region\>**: Specify the AWS account ID and the region where the stack is going to be deployed. You can create settings for multiple accounts/regions for different deployment environments (test, staging, prod, etc.).
+- AWS Account/Region-specific parameters:
+  - **API_DOMAIN.name**: API domain name.
+  - **API_DOMAIN.certificateArn**: The AWS ARN of your Certificate for the API domain.
+  - **KEY_ARN**: The AWS ARN of the key for sign JWTs with, the key is stored in AWS KMS.
+  - **ISS**: The 'iss' (Issuer) claim of the Access Token, identifies this Authorization Server.
+  - **SENDGRID_API_KEY**: SendGrid API key.
+  - **SYS_EMAIL_FROM**: The FROM address for OTP emails. The domain or email address must be verified in SendGrid.
+  - **CLIENTS_TABLE_NAME**, **CACHE_TABLE_NAME**, **NORMALIZED_EMAIL_INDEX_NAME**, **AUTH_CODE_INDEX_NAME**: DynamoDB tables and indexes names.
 
 Dependencies: [jsonschema](https://github.com/tdegrunt/jsonschema) and [sendgrid-nodejs](https://github.com/sendgrid/sendgrid-nodejs/tree/main/packages/mail).
 Install them into the **/aws-cdk/2020-11/auth-api/lambda/** folder:
