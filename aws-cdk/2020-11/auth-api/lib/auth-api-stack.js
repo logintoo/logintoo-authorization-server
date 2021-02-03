@@ -1,30 +1,33 @@
-'use strict';
 const Config = require('./Config.js');
+const Tags = require('./Tags.js');
+
+const awsAccount = process.env.CDK_DEFAULT_ACCOUNT;
+const awsRegion = process.env.CDK_DEFAULT_REGION;
 
 // This API version. It will be used as an API URI path, e.g. https://api.example.com/<API_VERSION>/auth.
-const API_VERSION = '2020-11';
+const API_VERSION = Config.API_VERSION;
 
 // API domain name and certificate Arn.
-const API_DOMAIN_NAME = Config.API_DOMAIN_NAME;
-const CERTIFICATE_ARN = Config.CERTIFICATE_ARN;
+const API_DOMAIN_NAME = Config.PROFILE[awsAccount][awsRegion].API_DOMAIN.name;
+const CERTIFICATE_ARN = Config.PROFILE[awsAccount][awsRegion].API_DOMAIN.certificateArn;
 
 // The Arn of the key for sign JWTs with, the key is stored in AWS KMS.
-const KEY_ARN = Config.KEY_ARN;
+const KEY_ARN = Config.PROFILE[awsAccount][awsRegion].KEY_ARN;
 
 // JWT "iss" (issuer) claim.
-const ISS = Config.ISS;
+const ISS = Config.PROFILE[awsAccount][awsRegion].ISS;
 
 // SendGrid API key and template ID.
-const SENDGRID_API_KEY = Config.SENDGRID_API_KEY;
+const SENDGRID_API_KEY = Config.PROFILE[awsAccount][awsRegion].SENDGRID_API_KEY;
 
 // The FROM address for OTP emails. The domain must be verified in SendGrid.
-const SYS_EMAIL_FROM = Config.SYS_EMAIL_FROM;
+const SYS_EMAIL_FROM = Config.PROFILE[awsAccount][awsRegion].SYS_EMAIL_FROM;
 
 // DynamoDB tables and indexes names.
-const CLIENTS_TABLE_NAME = Config.CLIENTS_TABLE_NAME + '-' + API_VERSION;
-const CACHE_TABLE_NAME = Config.CACHE_TABLE_NAME + '-' + API_VERSION;
-const NORMALIZED_EMAIL_INDEX_NAME = Config.NORMALIZED_EMAIL_INDEX_NAME;
-const AUTH_CODE_INDEX_NAME = Config.AUTH_CODE_INDEX_NAME;
+const CLIENTS_TABLE_NAME = Config.PROFILE[awsAccount][awsRegion].CLIENTS_TABLE_NAME + '-' + API_VERSION;
+const CACHE_TABLE_NAME = Config.PROFILE[awsAccount][awsRegion].CACHE_TABLE_NAME + '-' + API_VERSION;
+const NORMALIZED_EMAIL_INDEX_NAME = Config.PROFILE[awsAccount][awsRegion].NORMALIZED_EMAIL_INDEX_NAME;
+const AUTH_CODE_INDEX_NAME = Config.PROFILE[awsAccount][awsRegion].AUTH_CODE_INDEX_NAME;
 
 // Patterns to be used in the API Gateway models and in Lambda functions.
 const CLIENT_ID_PATTERN = '^[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-4[0-9A-Fa-f]{3}-[89ABab][0-9A-Fa-f]{3}-[0-9A-Fa-f]{12}$';
@@ -47,6 +50,9 @@ const OTP_TIMEOUT_RANGE = JSON.stringify({min: 5, max: 30, default: 10}); //minu
 // Tokens expiration time.
 const ACCESS_TOKEN_EXP_RANGE = JSON.stringify({min: 60, max: 86400, default: 3600}); //seconds
 const REFRESH_TOKEN_EXP_RANGE = JSON.stringify({min: 3600, max: 2592000, default: 604800}); //seconds
+
+// Initial TTL for the Cache table records. Will be overwritten by refresh token expiration time.
+const CACHE_TTL = 3600; // 1 hour
 
 // JWT: header, payload and signature divided by dots.
 const TOKEN_PATTERN = '^[a-zA-Z0-9\-_]+\.[a-zA-Z0-9\-_]+\.[a-zA-Z0-9\-_]+$';
@@ -72,10 +78,7 @@ class AuthApiStack extends cdk.Stack {
     super(scope, id, props);
 
     // Tag all resources.
-    const tags = setTags();
-    for (let tag of tags) {
-      cdk.Tags.of(this).add(tag.key, tag.value);
-    }
+    Tags.set(this);
 
     const jwtKey = kms.Key.fromKeyArn(this, 'jwtKey', KEY_ARN);
 
@@ -122,6 +125,7 @@ class AuthApiStack extends cdk.Stack {
     new LogintooApi(this, 'api', {
       API_DOMAIN_NAME: API_DOMAIN_NAME,
       API_VERSION: API_VERSION,
+      CACHE_TTL: CACHE_TTL,
       CERTIFICATE_ARN: CERTIFICATE_ARN,
       CLIENT_ID_PATTERN: CLIENT_ID_PATTERN,
       CODE_CHALLENGE_PATTERN: CODE_CHALLENGE_PATTERN,
@@ -138,29 +142,6 @@ class AuthApiStack extends cdk.Stack {
     });
 
   }
-}
-
-function setTags() {
-  const tags = [];
-
-  // Full path to the working directory.
-  const pwd = process.env.PWD;
-  if (pwd) {
-    tags.push({
-      key: 'Working Directory',
-      value: pwd
-    });
-  }
-
-  // Use the owner tag for known accounts or the OS username.
-  const awsAccount = process.env.CDK_DEFAULT_ACCOUNT;
-
-  tags.push({
-    key: 'Owner',
-    value: (Config.KNOWN_AWS_ACCOUNTS[awsAccount]) ? Config.KNOWN_AWS_ACCOUNTS[awsAccount].ownerTag : process.env.USER
-  });
-
-  return tags;
 }
 
 module.exports = { AuthApiStack };

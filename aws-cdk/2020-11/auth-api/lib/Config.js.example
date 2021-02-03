@@ -1,27 +1,36 @@
 module.exports = {
-  KNOWN_AWS_ACCOUNTS: {
-    '000000000000': {ownerTag: 'Owner'}
-  },
+  // This API version. It will be used as an API URI path, e.g. https://api.example.com/<API_VERSION>/auth.
+  API_VERSION: '<Version>',
 
-  // API domain name and certificate Arn.
-  API_DOMAIN_NAME: 'api.example.net',
-  CERTIFICATE_ARN: 'arn:aws:acm:<region>:<account>:certificate/<ID>',
+  PROFILE: {
+    '<account>': {      // AWS Account ID, e.g. '123456789012'
+      tags: {owner: 'Owner'},
 
-  // The Arn of the key for sign JWTs with, the key is stored in AWS KMS.
-  KEY_ARN: 'arn:aws:kms:<region>:<account>:key/<ID>',
+      '<region>': {     // Region, e.g. 'us-east-1'
+        // API domain name and certificate Arn.
+        API_DOMAIN: {
+          name: 'api.example.net',
+          certificateArn: 'arn:aws:acm:<region>:<account>:certificate/<ID>'
+        },
 
-  // JWT "iss" (issuer) claim.
-  ISS: 'example.com',
+        // The Arn of the key for sign JWTs with, the key is stored in AWS KMS.
+        KEY_ARN: 'arn:aws:kms:<region>:<account>:key/<ID>',
 
-  // SendGrid API key.
-  SENDGRID_API_KEY: '<SG.KEY>',
+        // JWT "iss" (issuer) claim.
+        ISS: 'example.com',
 
-  // The FROM address for OTP emails. The domain or email address must be verified in SendGrid.
-  SYS_EMAIL_FROM: 'auth@example.com',
+        // SendGrid API key.
+        SENDGRID_API_KEY: '<SG.KEY>',
 
-  // DynamoDB tables and indexes names.
-  CLIENTS_TABLE_NAME: 'logintoo-clients',
-  CACHE_TABLE_NAME: 'logintoo-cache',
-  NORMALIZED_EMAIL_INDEX_NAME: 'normalizedEmailIndex',
-  AUTH_CODE_INDEX_NAME: 'authorizationCodeIndex',
+        // The FROM address for OTP emails. The domain or email address must be verified in SendGrid.
+        SYS_EMAIL_FROM: 'auth@example.com',
+
+        // DynamoDB tables and indexes names.
+        CLIENTS_TABLE_NAME: 'logintoo-clients',
+        CACHE_TABLE_NAME: 'logintoo-cache',
+        NORMALIZED_EMAIL_INDEX_NAME: 'normalizedEmailIndex',
+        AUTH_CODE_INDEX_NAME: 'authorizationCodeIndex'
+      }
+    }
+  }
 };

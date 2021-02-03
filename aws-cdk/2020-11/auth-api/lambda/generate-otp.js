@@ -1,7 +1,7 @@
 'use strict';
 
 /**
- * Listens to the cache table stream. Receives records in bunches of up to 10 (settings are in authorize-lambda.js).
+ * Listens to the cache table stream. Receives records in bunches of up to 10 (settings are in otp-lambda.js).
  * Generates a one-time password and saves data in the cache table.
  */
 

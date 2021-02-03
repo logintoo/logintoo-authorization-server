@@ -275,7 +275,7 @@ module.exports = {
     // Reject if issuer don't match.
     if (jwtPayload.iss != jwtIss) {
       console.log('Bad ISS. Email: ' + jwtPayload.email + '. Iss: ' + jwtPayload.iss);
-      return {error: 'BAD_ISS_TOKEN'};
+      throw new UnauthorizedError('Unauthorized');
     }
 
     // Reject if the key ID is not specified.
@@ -380,7 +380,10 @@ module.exports = {
 
     let headers = {
       'Content-Type': 'application/json',
-      'Access-Control-Allow-Origin': '*'
+      'Access-Control-Allow-Origin': '*',
+      'Cache-Control': 'no-store',
+      'Pragma': 'no-cache',
+      'Referrer-Policy': 'no-referrer'
     };
 
     if (typeof headersExtra === 'object') {

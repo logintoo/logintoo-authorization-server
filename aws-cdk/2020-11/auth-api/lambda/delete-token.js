@@ -73,7 +73,7 @@ function getValidationSchema() {
 // Delete record from the Cache table.
 async function deleteAuthRecord(refreshTokenPayload, event) {
   const {sub, client_id, auth_record_id, jti} = refreshTokenPayload;
-  const sourceIp = event.requestContext.identity.sourceIp;
+  const sourceIp = (event.headers['CF-Connecting-IP']) ? event.headers['CF-Connecting-IP'] : event.requestContext.identity.sourceIp;
   const userAgent = event.requestContext.identity.userAgent;
 
   try {

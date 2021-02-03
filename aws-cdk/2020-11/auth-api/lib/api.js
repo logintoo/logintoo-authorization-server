@@ -1,6 +1,3 @@
-// Initial TTL for the Cache table records. Will be overwritten by refresh token expiration time.
-const CACHE_TTL = 3600; // 1 hour
-
 const cdk = require('@aws-cdk/core');
 const apigw = require('@aws-cdk/aws-apigateway');
 const iam = require('@aws-cdk/aws-iam');
@@ -23,6 +20,20 @@ class LogintooApi extends cdk.Construct {
     });
     domain.addBasePathMapping(api, {
       basePath: props.API_VERSION
+    });
+
+    api.addGatewayResponse('bad_request_body', {
+      type: apigw.ResponseType.BAD_REQUEST_BODY,
+      statusCode: '400',
+      responseHeaders: {
+        'Access-Control-Allow-Origin': "'*'",
+        'Cache-Control': "'no-store'",
+        'Pragma': "'no-cache'",
+        'Referrer-Policy': "'no-referrer'"
+      },
+      templates: {
+        'application/json': '{ "message": $context.error.messageString, "error": "invalid_request"}'
+      }
     });
 
     const authorizeResource = api.root.addResource('auth');
@@ -154,6 +165,9 @@ class LogintooApi extends cdk.Construct {
             statusCode: '200',
             responseParameters: {
               'method.response.header.Access-Control-Allow-Origin': "'*'",
+              'method.response.header.Cache-Control': "'no-store'",
+              'method.response.header.Pragma': "'no-cache'",
+              'method.response.header.Referrer-Policy': "'no-referrer'"
             },
             responseTemplates: {
               'application/json': JSON.stringify({statusCode: 200, statusMessage: '200 OK'})
@@ -162,6 +176,12 @@ class LogintooApi extends cdk.Construct {
           {
             statusCode: '400',
             selectionPattern: '4\\d{2}',
+            responseParameters: {
+              'method.response.header.Access-Control-Allow-Origin': "'*'",
+              'method.response.header.Cache-Control': "'no-store'",
+              'method.response.header.Pragma': "'no-cache'",
+              'method.response.header.Referrer-Policy': "'no-referrer'"
+            },
             responseTemplates: {
               'application/json': JSON.stringify({
                 statusCode: 400,
@@ -173,6 +193,12 @@ class LogintooApi extends cdk.Construct {
           {
             statusCode: '500',
             selectionPattern: '5\\d{2}',
+            responseParameters: {
+              'method.response.header.Access-Control-Allow-Origin': "'*'",
+              'method.response.header.Cache-Control': "'no-store'",
+              'method.response.header.Pragma': "'no-cache'",
+              'method.response.header.Referrer-Policy': "'no-referrer'"
+            },
             responseTemplates: {
               'application/json': JSON.stringify({statusCode: 500, statusMessage: '500 Internal Server Error'})
             }
@@ -181,7 +207,7 @@ class LogintooApi extends cdk.Construct {
         passthroughBehavior: apigw.PassthroughBehavior.WHEN_NO_TEMPLATES,
         requestTemplates:{
           'application/json': ' \
-          #set($ttl = $context.requestTimeEpoch / 1000 + ' + CACHE_TTL + ')\n \
+          #set($ttl = $context.requestTimeEpoch / 1000 + ' + props.CACHE_TTL + ')\n \
           #set($body = $util.parseJson($input.body))\n \
           {\n \
             \"TableName\": \"' + props.cacheTable.tableName + '\",\n \
@@ -189,12 +215,24 @@ class LogintooApi extends cdk.Construct {
               \"id\": {\"S\": \"$context.requestId\"},\n \
               \"ttl\": {\"N\": \"$ttl\"},\n \
               \"body\": {\"S\": \"$util.escapeJavaScript($input.json(\'$\'))\"},\n \
-              \"sourceIp\": {\"L\": [{\"S\": \"$context.identity.sourceIp\"}]},\n \
+              \n \
               \"userAgent\": {\"L\": [{\"S\": \"$context.identity.userAgent\"}]},\n \
-              \
-              #if($body.get(\'language\') != \'\') \"language\": {\"S\": \"$body.get(\'language\')\"},\n\ #end \
-              #if ($body.get(\'locale\') != \'\') \"locale\": {\"S\": \"$body.get(\'locale\')\"},\n\ #end \
-              \
+              \n \
+              #if ($body.get(\'language\') != \'\') \"language\": {\"S\": \"$body.get(\'language\')\"}, #end\n \
+              #if ($body.get(\'locale\') != \'\') \"locale\": {\"S\": \"$body.get(\'locale\')\"}, #end\n \
+              \n \
+              #if ($input.params(\'CF-Connecting-IP\') != \'\')\n \
+                \"sourceIp\": {\"L\": [{\"S\": \"$input.params(\'CF-Connecting-IP\')\"}]},\n \
+              #else\n \
+                \"sourceIp\": {\"L\": [{\"S\": \"$context.identity.sourceIp\"}]},\n \
+              #end\n \
+              \n \
+              #if ($input.params(\'CF-IPCountry\') != \'\')\n \
+                \"country\": {\"S\": \"$input.params(\'CF-IPCountry\')\"},\n \
+              #else\n \
+                \"country\": {\"S\": \"$input.params(\'CloudFront-Viewer-Country\')\"},\n \
+              #end\n \
+              \n \
               \"client_id\": {\"S\": \"$body.get(\'client_id\')\"},\n \
               \"code_challenge\": {\"S\": \"$body.get(\'code_challenge\')\"},\n \
               \"code_challenge_method\": {\"S\": \"$body.get(\'code_challenge_method\')\"},\n \
@@ -218,19 +256,28 @@ class LogintooApi extends cdk.Construct {
         {
           statusCode: '200',
           responseParameters: {
-            'method.response.header.Access-Control-Allow-Origin': true
+            'method.response.header.Access-Control-Allow-Origin': true,
+            'method.response.header.Cache-Control': true,
+            'method.response.header.Pragma': true,
+            'method.response.header.Referrer-Policy': true
           }
         },
         {
           statusCode: '400',
           responseParameters: {
-            'method.response.header.Access-Control-Allow-Origin': true
+            'method.response.header.Access-Control-Allow-Origin': true,
+            'method.response.header.Cache-Control': true,
+            'method.response.header.Pragma': true,
+            'method.response.header.Referrer-Policy': true
           }
         },
         {
           statusCode: '500',
           responseParameters: {
-            'method.response.header.Access-Control-Allow-Origin': true
+            'method.response.header.Access-Control-Allow-Origin': true,
+            'method.response.header.Cache-Control': true,
+            'method.response.header.Pragma': true,
+            'method.response.header.Referrer-Policy': true
           }
         }
       ],
@@ -244,37 +291,55 @@ class LogintooApi extends cdk.Construct {
         {
           statusCode: '200',
           responseParameters: {
-            'method.response.header.Access-Control-Allow-Origin': true
+            'method.response.header.Access-Control-Allow-Origin': true,
+            'method.response.header.Cache-Control': true,
+            'method.response.header.Pragma': true,
+            'method.response.header.Referrer-Policy': true
           }
         },
         {
           statusCode: '400',
           responseParameters: {
-            'method.response.header.Access-Control-Allow-Origin': true
+            'method.response.header.Access-Control-Allow-Origin': true,
+            'method.response.header.Cache-Control': true,
+            'method.response.header.Pragma': true,
+            'method.response.header.Referrer-Policy': true
           }
         },
         {
           statusCode: '401',
           responseParameters: {
-            'method.response.header.Access-Control-Allow-Origin': true
+            'method.response.header.Access-Control-Allow-Origin': true,
+            'method.response.header.Cache-Control': true,
+            'method.response.header.Pragma': true,
+            'method.response.header.Referrer-Policy': true
           }
         },
         {
           statusCode: '403',
           responseParameters: {
-            'method.response.header.Access-Control-Allow-Origin': true
+            'method.response.header.Access-Control-Allow-Origin': true,
+            'method.response.header.Cache-Control': true,
+            'method.response.header.Pragma': true,
+            'method.response.header.Referrer-Policy': true
           }
         },
         {
           statusCode: '500',
           responseParameters: {
-            'method.response.header.Access-Control-Allow-Origin': true
+            'method.response.header.Access-Control-Allow-Origin': true,
+            'method.response.header.Cache-Control': true,
+            'method.response.header.Pragma': true,
+            'method.response.header.Referrer-Policy': true
           }
         },
         {
           statusCode: '503',
           responseParameters: {
-            'method.response.header.Access-Control-Allow-Origin': true
+            'method.response.header.Access-Control-Allow-Origin': true,
+            'method.response.header.Cache-Control': true,
+            'method.response.header.Pragma': true,
+            'method.response.header.Referrer-Policy': true
           }
         }
       ],
@@ -288,37 +353,55 @@ class LogintooApi extends cdk.Construct {
         {
           statusCode: '200',
           responseParameters: {
-            'method.response.header.Access-Control-Allow-Origin': true
+            'method.response.header.Access-Control-Allow-Origin': true,
+            'method.response.header.Cache-Control': true,
+            'method.response.header.Pragma': true,
+            'method.response.header.Referrer-Policy': true
           }
         },
         {
           statusCode: '400',
           responseParameters: {
-            'method.response.header.Access-Control-Allow-Origin': true
+            'method.response.header.Access-Control-Allow-Origin': true,
+            'method.response.header.Cache-Control': true,
+            'method.response.header.Pragma': true,
+            'method.response.header.Referrer-Policy': true
           }
         },
         {
           statusCode: '401',
           responseParameters: {
-            'method.response.header.Access-Control-Allow-Origin': true
+            'method.response.header.Access-Control-Allow-Origin': true,
+            'method.response.header.Cache-Control': true,
+            'method.response.header.Pragma': true,
+            'method.response.header.Referrer-Policy': true
           }
         },
         {
           statusCode: '403',
           responseParameters: {
-            'method.response.header.Access-Control-Allow-Origin': true
+            'method.response.header.Access-Control-Allow-Origin': true,
+            'method.response.header.Cache-Control': true,
+            'method.response.header.Pragma': true,
+            'method.response.header.Referrer-Policy': true
           }
         },
         {
           statusCode: '500',
           responseParameters: {
-            'method.response.header.Access-Control-Allow-Origin': true
+            'method.response.header.Access-Control-Allow-Origin': true,
+            'method.response.header.Cache-Control': true,
+            'method.response.header.Pragma': true,
+            'method.response.header.Referrer-Policy': true
           }
         },
         {
           statusCode: '503',
           responseParameters: {
-            'method.response.header.Access-Control-Allow-Origin': true
+            'method.response.header.Access-Control-Allow-Origin': true,
+            'method.response.header.Cache-Control': true,
+            'method.response.header.Pragma': true,
+            'method.response.header.Referrer-Policy': true
           }
         }
       ],
@@ -332,37 +415,55 @@ class LogintooApi extends cdk.Construct {
         {
           statusCode: '200',
           responseParameters: {
-            'method.response.header.Access-Control-Allow-Origin': true
+            'method.response.header.Access-Control-Allow-Origin': true,
+            'method.response.header.Cache-Control': true,
+            'method.response.header.Pragma': true,
+            'method.response.header.Referrer-Policy': true
           }
         },
         {
           statusCode: '400',
           responseParameters: {
-            'method.response.header.Access-Control-Allow-Origin': true
+            'method.response.header.Access-Control-Allow-Origin': true,
+            'method.response.header.Cache-Control': true,
+            'method.response.header.Pragma': true,
+            'method.response.header.Referrer-Policy': true
           }
         },
         {
           statusCode: '401',
           responseParameters: {
-            'method.response.header.Access-Control-Allow-Origin': true
+            'method.response.header.Access-Control-Allow-Origin': true,
+            'method.response.header.Cache-Control': true,
+            'method.response.header.Pragma': true,
+            'method.response.header.Referrer-Policy': true
           }
         },
         {
           statusCode: '403',
           responseParameters: {
-            'method.response.header.Access-Control-Allow-Origin': true
+            'method.response.header.Access-Control-Allow-Origin': true,
+            'method.response.header.Cache-Control': true,
+            'method.response.header.Pragma': true,
+            'method.response.header.Referrer-Policy': true
           }
         },
         {
           statusCode: '500',
           responseParameters: {
-            'method.response.header.Access-Control-Allow-Origin': true
+            'method.response.header.Access-Control-Allow-Origin': true,
+            'method.response.header.Cache-Control': true,
+            'method.response.header.Pragma': true,
+            'method.response.header.Referrer-Policy': true
           }
         },
         {
           statusCode: '503',
           responseParameters: {
-            'method.response.header.Access-Control-Allow-Origin': true
+            'method.response.header.Access-Control-Allow-Origin': true,
+            'method.response.header.Cache-Control': true,
+            'method.response.header.Pragma': true,
+            'method.response.header.Referrer-Policy': true
           }
         }
       ],
@@ -376,37 +477,55 @@ class LogintooApi extends cdk.Construct {
         {
           statusCode: '200',
           responseParameters: {
-            'method.response.header.Access-Control-Allow-Origin': true
+            'method.response.header.Access-Control-Allow-Origin': true,
+            'method.response.header.Cache-Control': true,
+            'method.response.header.Pragma': true,
+            'method.response.header.Referrer-Policy': true
           }
         },
         {
           statusCode: '400',
           responseParameters: {
-            'method.response.header.Access-Control-Allow-Origin': true
+            'method.response.header.Access-Control-Allow-Origin': true,
+            'method.response.header.Cache-Control': true,
+            'method.response.header.Pragma': true,
+            'method.response.header.Referrer-Policy': true
           }
         },
         {
           statusCode: '401',
           responseParameters: {
-            'method.response.header.Access-Control-Allow-Origin': true
+            'method.response.header.Access-Control-Allow-Origin': true,
+            'method.response.header.Cache-Control': true,
+            'method.response.header.Pragma': true,
+            'method.response.header.Referrer-Policy': true
           }
         },
         {
           statusCode: '403',
           responseParameters: {
-            'method.response.header.Access-Control-Allow-Origin': true
+            'method.response.header.Access-Control-Allow-Origin': true,
+            'method.response.header.Cache-Control': true,
+            'method.response.header.Pragma': true,
+            'method.response.header.Referrer-Policy': true
           }
         },
         {
           statusCode: '500',
           responseParameters: {
-            'method.response.header.Access-Control-Allow-Origin': true
+            'method.response.header.Access-Control-Allow-Origin': true,
+            'method.response.header.Cache-Control': true,
+            'method.response.header.Pragma': true,
+            'method.response.header.Referrer-Policy': true
           }
         },
         {
           statusCode: '503',
           responseParameters: {
-            'method.response.header.Access-Control-Allow-Origin': true
+            'method.response.header.Access-Control-Allow-Origin': true,
+            'method.response.header.Cache-Control': true,
+            'method.response.header.Pragma': true,
+            'method.response.header.Referrer-Policy': true
           }
         }
       ],

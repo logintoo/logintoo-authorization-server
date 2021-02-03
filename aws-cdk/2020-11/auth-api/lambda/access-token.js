@@ -129,7 +129,7 @@ async function getAuthIndex(request) {
 
     if (res.Count != 1) {
       // The Authorization Code expired or no record found.
-      throw new NotFoundError('Could not found a record in the cache table. Client ID: ' + client_id + '. Email: ' + email + '.');
+      throw new NotFoundError('Could not found a record in the cache table. Client ID: ' + client_id + '. Email: ' + email + '. Redirect URI: ' + redirectUri.toString() + '.');
     }
 
     return res.Items[0];
